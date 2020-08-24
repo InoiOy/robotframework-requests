@@ -40,6 +40,16 @@ Get Requests with Url Parameters
     ${jsondata}=  To Json  ${resp.content}
     Should Be Equal     ${jsondata['args']}     ${params}
 
+Get Requests with Url Parameter List
+    [Tags]  get
+    Create Session  httpbin     http://httpbin.org
+    ${values}=    Create List  value1  value2
+    &{params}=   Create Dictionary   key=${values}
+    ${resp}=     Get Request  httpbin  /get    params=${params}
+    Should Be Equal As Strings  ${resp.status_code}  200
+    ${jsondata}=  To Json  ${resp.content}
+    Should Be Equal     ${jsondata['args']['key']}     ${values}
+
 Get Requests with Json Data
     [Tags]  get
     Create Session  httpbin     http://httpbin.org
