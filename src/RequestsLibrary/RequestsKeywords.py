@@ -593,7 +593,9 @@ class RequestsKeywords(object):
             json=None,
             params=None,
             allow_redirects=None,
-            timeout=None):
+            timeout=None,
+            log_options=None,
+    ):
         """ Send a GET request on the session object found using the
         given `alias`
 
@@ -628,7 +630,9 @@ class RequestsKeywords(object):
             data=data,
             json=json,
             allow_redirects=redir,
-            timeout=timeout)
+            timeout=timeout,
+            log_options=log_options,
+        )
 
         return response
 
@@ -642,7 +646,9 @@ class RequestsKeywords(object):
             headers=None,
             files=None,
             allow_redirects=None,
-            timeout=None):
+            timeout=None,
+            log_options=None,
+    ):
         """ Send a POST request on the session object found using the
         given `alias`
 
@@ -684,7 +690,9 @@ class RequestsKeywords(object):
             files=files,
             headers=headers,
             allow_redirects=redir,
-            timeout=timeout)
+            timeout=timeout,
+            log_options=log_options,
+        )
 
         return response
 
@@ -698,7 +706,9 @@ class RequestsKeywords(object):
             headers=None,
             files=None,
             allow_redirects=None,
-            timeout=None):
+            timeout=None,
+            log_options=None,
+    ):
         """ Send a PATCH request on the session object found using the
         given `alias`
 
@@ -738,7 +748,9 @@ class RequestsKeywords(object):
             files=files,
             headers=headers,
             allow_redirects=redir,
-            timeout=timeout)
+            timeout=timeout,
+            log_options=log_options,
+        )
 
         return response
 
@@ -752,7 +764,9 @@ class RequestsKeywords(object):
             files=None,
             headers=None,
             allow_redirects=None,
-            timeout=None):
+            timeout=None,
+            log_options=None,
+    ):
         """ Send a PUT request on the session object found using the
         given `alias`
 
@@ -790,7 +804,9 @@ class RequestsKeywords(object):
             files=files,
             headers=headers,
             allow_redirects=redir,
-            timeout=timeout)
+            timeout=timeout,
+            log_options=log_options,
+        )
 
         return response
 
@@ -803,7 +819,9 @@ class RequestsKeywords(object):
             params=None,
             headers=None,
             allow_redirects=None,
-            timeout=None):
+            timeout=None,
+            log_options=None,
+    ):
         """ Send a DELETE request on the session object found using the
         given `alias`
 
@@ -833,7 +851,9 @@ class RequestsKeywords(object):
             params=params,
             headers=headers,
             allow_redirects=redir,
-            timeout=timeout)
+            timeout=timeout,
+            log_options=log_options,
+        )
 
         return response
 
@@ -935,6 +955,8 @@ class RequestsKeywords(object):
         method_function = getattr(session, method)
         self._capture_output()
 
+        log_options = kwargs.pop('log_options', None)
+
         resp = method_function(
             self._get_url(session, uri),
             params=kwargs.pop('params', None),
@@ -943,10 +965,10 @@ class RequestsKeywords(object):
             verify=self.verify,
             **kwargs)
 
-        log.log_request(resp)
+        log.log_request(resp, log_options=log_options)
         self._print_debug()
         session.last_resp = resp
-        log.log_response(resp)
+        log.log_response(resp, log_options=log_options)
 
         data = kwargs.get('data', None)
         if is_file_descriptor(data):

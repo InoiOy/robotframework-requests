@@ -57,7 +57,22 @@ def test_log_request(mocked_logger):
                                                   "url=%s \n " % request.url +
                                                   "path_url=%s \n " % request.path_url +
                                                   "headers=%s \n " % request.headers +
-                                                  "body=%s \n " % request.body)
+                                                  "body(base64=False)=%s \n " % request.body)
+
+
+@mock.patch('RequestsLibrary.log.logger')
+def test_log_request_base64_body(mocked_logger):
+    request = Request(method='get', url='http://mock.rulezz')
+    request = request.prepare()
+    response = mock.MagicMock()
+    response.history = []
+    response.request = request
+    log_request(response, log_options={'request_body_binary': True})
+    assert mocked_logger.info.call_args[0][0] == ("%s Request : " % request.method +
+                                                  "url=%s \n " % request.url +
+                                                  "path_url=%s \n " % request.path_url +
+                                                  "headers=%s \n " % request.headers +
+                                                  "body(base64=True)=%s \n " % request.body)
 
 
 @mock.patch('RequestsLibrary.log.logger')
@@ -76,7 +91,7 @@ def test_log_request_with_redirect(mocked_logger):
                                                   "url=%s (redirected) \n " % response.history[0].request.url +
                                                   "path_url=%s \n " % response.history[0].request.path_url +
                                                   "headers=%s \n " % request.headers +
-                                                  "body=%s \n " % request.body)
+                                                  "body(base64=False)=%s \n " % request.body)
 
 
 @mock.patch('RequestsLibrary.log.logger')
@@ -92,7 +107,23 @@ def test_log_response(mocked_logger):
                                                                                 response.url) +
                                                   "status=%s, reason=%s \n " % (response.status_code,
                                                                                 response.reason) +
-                                                  "body=%s \n " % response.text)
+                                                  "body(base64=False)=%s \n " % response.text)
+
+
+@mock.patch('RequestsLibrary.log.logger')
+def test_log_response_base64_body(mocked_logger):
+    response = mock.MagicMock()
+    response.url = 'http://mock.rulezz'
+    response.request.method = 'GET'
+    response.status_code = 200
+    response.reason = 'OK'
+    response.content = b"<html>body</html>"
+    log_response(response, log_options={'response_body_binary': True})
+    assert mocked_logger.info.call_args[0][0] == ("%s Response : url=%s \n " % (response.request.method.upper(),
+                                                                                response.url) +
+                                                  "status=%s, reason=%s \n " % (response.status_code,
+                                                                                response.reason) +
+                                                  "body(base64=True)=PGh0bWw+Ym9keTwvaHRtbD4= \n ")
 
 
 def test_format_data_to_log_string_truncated_1():
